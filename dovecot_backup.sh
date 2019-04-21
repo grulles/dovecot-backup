@@ -102,30 +102,30 @@
 SCRIPT_NAME='dovecot_backup'
 
 # CUSTOM - Backup-Files.
-DIR_BACKUP='/srv/backup'
+DIR_BACKUP='/var/backup/dovecot'
 FILE_BACKUP=dovecot_backup_`date '+%Y%m%d_%H%M%S'`.tar.gz
 FILE_DELETE='*.tar.gz'
 BACKUPFILES_DELETE=14
 
 # CUSTOM - dovecot Folders.
 MAILDIR_TYPE='maildir'
-MAILDIR_NAME='Maildir'
-MAILDIR_USER='vmail'
-MAILDIR_GROUP='vmail'
+MAILDIR_NAME='mail'
+MAILDIR_USER='dovecot'
+MAILDIR_GROUP='dovecot'
 
 # CUSTOM - Path and file name of a file with e-mail addresses to backup, if
 #          SET. If NOT, the script will determine all mailboxes by default.
 # FILE_USERLIST='/path/and/file/name/of/user/list/with/one/user/per/line'
 # - OR -
-# FILE_USERLIST=''
 FILE_USERLIST=''
+#FILE_USERLIST='dovecot_backup.userlist'
 
 # CUSTOM - Check when FILE_USERLIST was used, if the user per line was a
 #          valid e-mail address [Y|N].
 FILE_USERLIST_VALIDATE_EMAIL='N'
 
 # CUSTOM - Mail-Recipient.
-MAIL_RECIPIENT='you@example.com'
+MAIL_RECIPIENT=''
 
 # CUSTOM - Status-Mail [Y|N].
 MAIL_STATUS='N'
@@ -393,6 +393,7 @@ log ""
 # Start real backup process for all users.
 for users in "${VAR_LISTED_USER[@]}"; do
 	log "Start backup process for user: $users ..."
+	log "DEBUG users = $users" 
 
 	((VAR_COUNT_USER++))
 	DOMAINPART=${users#*@}
@@ -448,7 +449,7 @@ done
 
 # Set owner and rights permissions to backup directory and backup files.
 $CHOWN_COMMAND -R $MAILDIR_USER:$MAILDIR_GROUP $DIR_BACKUP
-$CHMOD_COMMAND 700 $DIR_BACKUP
+$CHMOD_COMMAND 770 $DIR_BACKUP
 $CHMOD_COMMAND -R 600 $DIR_BACKUP/*
 
 # Delete LOCK file.
